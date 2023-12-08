@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #fafafa;
+
+    --card: #09090b;
+    --card-foreground: #fafafa;
+
+    --popover: #0a0a0a;
+    --popover-foreground: #fafafa;
+
+    --primary: #9de86e;
+    --primary-hover: #80e142;
+    --primary-foreground: #17171c;
+
+    --secondary: #171718;
+    --secondary-foreground: #fafafa;
+
+    --muted: #262629;
+    --muted-foreground: #8f8f8f;
+
+    --accent: #262629;
+    --accent-foreground: #fafafa;
+
+    --destructive: #ca240e;
+    --destructive-foreground: #fafafa;
+
+    --border: #262629;
+    --input: #262629;
+    --ring: #9fe870;
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer components {
+  h1 {
+    @apply text-3xl font-bold;
+  }
+
+  h2 {
+    @apply text-2xl font-bold;
+  }
+
+  h3 {
+    @apply text-xl font-bold;
+  }
+
+  h4 {
+    @apply text-base font-bold;
+  }
+
+  h5 {
+    @apply text-sm font-bold;
+  }
+
+  h6 {
+    @apply text-xs font-bold;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.bg-container {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: radial-gradient(
+    ellipse at bottom,
+    rgba($color: #80e142, $alpha: 0.2) 0%,
+    var(--background) 100%
+  );
+  z-index: -1;
+}
+
+$lineColor: var(--background);
+$step: 4;
+$borderWeight: 1px;
+
+@function borderShadow($n) {
+  $value: "0px 0px #{$lineColor}";
+  @for $i from 0 through $n {
+    $value: "#{$value} , 0px #{($step)*$i}px #{$lineColor}";
+  }
+  @return unquote($value);
+}
+@function stripeShadow($n) {
+  $value: "0px 0px #{$lineColor}";
+  @for $i from 0 through $n {
+    $value: "#{$value} , #{($step)*$i}px 0px #{$lineColor}";
+  }
+
+  @return unquote($value);
+}
+$border: borderShadow(1000);
+$stripe: stripeShadow(1000);
+
+.bg {
+  width: 100%;
+  height: $borderWeight;
+  box-shadow: $border;
+
+  &:after {
+    content: "";
+    position: absolute;
+    width: $borderWeight;
+    height: 100%;
+    box-shadow: $stripe;
+  }
+}

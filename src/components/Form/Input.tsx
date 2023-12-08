@@ -19,7 +19,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       }
     };
 
-    console.log(getType());
     return (
       <div className="relative">
         <input
