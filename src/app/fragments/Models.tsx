@@ -2,7 +2,7 @@
 
 import { Glass } from "@/components/Display";
 import Image from "next/image";
-import Style from "@/styles/models.module.scss";
+import Style from "@/styles/modules/models.module.scss";
 import Content from "@/content";
 
 export default function Models(props: { className?: string }) {
