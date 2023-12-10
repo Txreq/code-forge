@@ -45,7 +45,9 @@ export default function Page() {
                   </p>
                 </div>
                 <div className="w-full">
-                  <Models className="flex justify-center" />
+                  <div className="inline-flex w-full justify-center">
+                    <Models />
+                  </div>
                 </div>
               </div>
             </div>

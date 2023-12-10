@@ -56,4 +56,4 @@ const Wrapper: React.FC<Props> = (props) => {
 };
 Wrapper.displayName = "GlassWrapper";
 
-export default { Provider: Wrapper, Card, Content };
+export default { Wrapper, Card, Content };
