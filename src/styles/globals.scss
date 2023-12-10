@@ -32,7 +32,7 @@
     --border: #262629;
     --input: #262629;
     --ring: #9fe870;
-
+    --neon: #68e918;
     --radius: 0.5rem;
   }
 }
@@ -120,4 +120,12 @@ $stripe: stripeShadow(1000);
     height: 100%;
     box-shadow: $stripe;
   }
+}
+
+.radial-overlay {
+  background: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 0) 0%,
+    var(--background) 100%
+  );
 }

@@ -1,4 +1,10 @@
+import Content from "@/content";
 import "@/styles/globals.scss";
+import { Metadata } from "next";
+
+export const metadata = {
+  title: Content.Brand,
+} as Metadata;
 
 export default function AuthLayout(props: { children: React.ReactNode }) {
   return (

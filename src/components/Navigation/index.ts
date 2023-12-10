@@ -1,5 +1,7 @@
 import Link from "./Link"
+import Navbar from "./Navbar"
 
 export {
-  Link
+  Link,
+  Navbar
 }

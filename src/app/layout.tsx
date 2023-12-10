@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 
 import { TRPCReactProvider } from "@/trpc/react";
+import Content from "@/content";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -11,7 +12,7 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Ameslay",
+  title: Content.Brand,
   description: "idk",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };

@@ -5,8 +5,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
@@ -33,7 +32,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {type === "password" && (
           <button
             type="button"
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded bg-primary/[.10] p-1 transition-all duration-200 active:scale-90"
+            className="bg-primary/[.10] absolute right-1.5 top-1/2 -translate-y-1/2 rounded p-1 transition-all duration-200 active:scale-90"
             onClick={() => {
               setHidden(() => !hidden);
             }}
