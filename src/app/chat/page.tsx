@@ -56,26 +56,19 @@ export default withAuth(({ user }) => {
 
       {/* middle */}
       <div
+        className="col-span-full col-start-3"
         style={{
           gridRow: "span 11 / span 11",
-          gridColumn: "span 8 / span 8",
-          gridColumnStart: 3,
-          height: "100%",
-          width: "100%",
         }}
-        className="bg-muted"
       ></div>
-      <div className="col-span-8 bg-card">
+      <div className="col-span-full col-start-3">
         <div className="inline-flex h-full w-full items-center gap-x-2 p-4">
-          <Input placeholder="prompt ..." className="w-full p-4 text-lg" />
+          <Input placeholder="prompt ..." className="w-full px-4 text-lg" />
           <Button className="px-2">
             <LuSend />
           </Button>
         </div>
       </div>
-
-      {/* far right */}
-      <div className="col-span-2 col-start-11 row-span-full bg-secondary"></div>
     </div>
   );
 });
