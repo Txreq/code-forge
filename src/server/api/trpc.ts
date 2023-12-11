@@ -1,16 +1,28 @@
 import { initTRPC, TRPCError } from "@trpc/server";
-import superjson from "superjson";
 import { ZodError } from "zod";
+
+import superjson from "superjson";
 
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
+import { Resend } from "resend";
+import { env } from "@/env";
 
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await getServerAuthSession();
+  const resend = new Resend(env.RESEND_API_KEY)
 
   return {
     db,
-    session,
+    session: {
+      ...session,
+      user: (!session || !session.user) ? null : (await db.user.findUnique({
+        where: {
+          id: session.user.id
+        }
+      }))
+    },
+    resend,
     ...opts,
   };
 };
@@ -43,5 +55,6 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
     },
   });
 });
+
 
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);

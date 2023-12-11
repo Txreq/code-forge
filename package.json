@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "rm -rf .next && next build",
+    "build": "next build",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "dev": "next dev",
@@ -38,6 +38,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.48.2",
     "react-icons": "^4.12.0",
+    "resend": "^2.0.0",
     "server-only": "^0.0.1",
     "sharp": "^0.33.0",
     "superjson": "^2.2.1",

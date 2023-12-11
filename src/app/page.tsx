@@ -16,7 +16,6 @@ const otman = Noto_Serif_Ottoman_Siyaq({
 
 export default async function Page() {
   const session = await getServerAuthSession();
-  console.log(session?.user);
   return (
     <>
       <Navbar className="fixed top-0 z-20 w-full" />

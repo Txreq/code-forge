@@ -15,9 +15,7 @@ export const withAuth = <T,>(Component: React.ComponentType<T & Session>) => {
       const user = await db.user.findUnique({ where: { id: session.user.id } });
       const url = headers().get("x-url");
 
-      if (!user?.verified && !url?.startsWith("/auth/verify")) {
-        redirect("/auth/verify");
-      } else return <Component {...props} {...session} />;
+      <Component {...props} {...session} />;
     }
   };
 
