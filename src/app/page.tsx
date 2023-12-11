@@ -5,14 +5,18 @@ import Content from "@/content";
 
 import { Models } from "./fragments";
 import { GridBackground } from "@/components/Display";
-import { Navbar } from "@/components/Navigation";
+import { Link, Navbar } from "@/components/Navigation";
+import { Button } from "@/components/Form";
+import { getServerAuthSession } from "@/server/auth";
 
 const otman = Noto_Serif_Ottoman_Siyaq({
   subsets: ["latin"],
   weight: "400",
 });
 
-export default function Page() {
+export default async function Page() {
+  const session = await getServerAuthSession();
+  console.log(session?.user);
   return (
     <>
       <Navbar className="fixed top-0 z-20 w-full" />
@@ -40,9 +44,18 @@ export default function Page() {
                   >
                     {Content.Home.Hero.Headline}
                   </h1>
-                  <p className="text-bold text-xl">
-                    {Content.Home.Hero.Subheading}
-                  </p>
+                  <div className="flex flex-col gap-y-2">
+                    <p className="text-bold text-xl">
+                      {Content.Home.Hero.Subheading}
+                    </p>
+                    <Link
+                      href={
+                        !session || !session?.user ? "/auth/sign-in" : "/chat"
+                      }
+                    >
+                      <Button>Start now</Button>
+                    </Link>
+                  </div>
                 </div>
                 <div className="w-full">
                   <div className="inline-flex w-full justify-center">

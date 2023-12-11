@@ -35,16 +35,17 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    account       Account?
-    sessions      Session[]
-    verified      Boolean?
-    gender        Gender?
-    type          Type      @default(Free)
+    id                String             @id @default(cuid())
+    name              String?
+    email             String?            @unique
+    emailVerified     DateTime?
+    image             String?
+    account           Account?
+    sessions          Session[]
+    verified          Boolean?
+    gender            Gender?
+    type              Type               @default(Free)
+    EmailVerification EmailVerification?
 }
 
 model VerificationToken {
@@ -68,4 +69,11 @@ enum Type {
 enum Status {
     Active
     Expired
+}
+
+model EmailVerification {
+    code       String
+    user_email String   @id @unique
+    user       User     @relation(fields: [user_email], references: [email], onDelete: Cascade)
+    timestamp  DateTime @default(now())
 }

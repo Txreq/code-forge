@@ -1,8 +1,8 @@
 "use client";
-
+import { useCallback } from "react";
 import { Button } from "@/components/Form";
 import { cn } from "@/lib/utils";
-import { useCallback } from "react";
+import { signIn } from "next-auth/react";
 
 // icons
 import { FcGoogle } from "react-icons/fc";
@@ -16,15 +16,9 @@ export default function SignInButton({
   className,
   labelText = "Sign in with",
 }: SignInButtonProps) {
-  const signIn = useCallback(async () => {
-    (await import("next-auth/react")).signIn("google", {}).catch(() => {
-      alert("Failed to sign you in.");
-    });
-  }, []);
-
   return (
     <Button
-      onClick={signIn}
+      onClick={() => void signIn("google")}
       variant="outline"
       className={cn("inline-flex gap-x-4", className)}
     >

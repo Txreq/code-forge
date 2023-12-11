@@ -9,7 +9,9 @@ import {
 } from "@/components/Display";
 import { Link } from "@/components/Navigation";
 
-export default function SignInPage() {
+import type { NextPage } from "next";
+
+const SignInPage: NextPage = () => {
   return (
     <CardFrame className="w-96 border-0 md:border">
       <CardHeader>
@@ -34,4 +36,6 @@ export default function SignInPage() {
       </CardFooter>
     </CardFrame>
   );
-}
+};
+
+export default SignInPage;
