@@ -15,25 +15,25 @@
   height: 100%;
   width: 100%;
   border-radius: inherit;
+
+  transition: all 500ms;
 }
 
 .card::before {
   background: radial-gradient(
     800px circle at var(--mouseX) var(--mouseY),
-    rgba($color: #fff, $alpha: 0.03) 0%,
+    rgba($color: #68e918, $alpha: 0.03) 0%,
     transparent 20%
   );
-  transition: all 500ms;
   z-index: 3;
 }
 
 .card::after {
   background: radial-gradient(
     400px circle at var(--mouseX) var(--mouseY),
-    rgba($color: #fff, $alpha: 0.08) 0%,
+    rgba($color: #68e918, $alpha: 0.08) 0%,
     transparent 60%
   );
-  transition: all 500ms;
   z-index: 1;
 }
 

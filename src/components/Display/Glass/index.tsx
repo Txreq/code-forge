@@ -9,9 +9,11 @@ type Props = {
   children?: React.ReactNode;
 };
 
-const Card: React.FC<Props> = (props) => (
-  <div className={cn(styles.card, props.className)}>{props.children}</div>
-);
+const Card: React.FC<Props> = (props) => {
+  return (
+    <div className={cn(styles.card, props.className)}>{props.children}</div>
+  );
+};
 const Content: React.FC<Props> = (props) => (
   <div className={cn(styles.content, "bg-background", props.className)}>
     {props.children}
