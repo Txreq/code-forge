@@ -11,5 +11,7 @@ export {
   Separator,
   GridBackground,
   Glass,
-  Logo
+  Logo,
 }
+
+export * from "./Avatar"

@@ -12,10 +12,7 @@ export const withAuth = <T,>(Component: React.ComponentType<T & Session>) => {
     const session = await getServerAuthSession();
     if (!session || !session?.user) redirect("/auth/sign-in");
     else {
-      const user = await db.user.findUnique({ where: { id: session.user.id } });
-      const url = headers().get("x-url");
-
-      <Component {...props} {...session} />;
+      return <Component {...props} {...session} />;
     }
   };
 

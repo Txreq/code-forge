@@ -67,6 +67,12 @@
   * {
     @apply border-border;
   }
+
+  *::selection {
+    background-color: var(--primary-hover);
+    color: var(--accent);
+  }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -128,4 +134,8 @@ $stripe: stripeShadow(1000);
     rgba(0, 0, 0, 0) 0%,
     var(--background) 100%
   );
+}
+
+::-webkit-scrollbar {
+  width: 0px;
 }
