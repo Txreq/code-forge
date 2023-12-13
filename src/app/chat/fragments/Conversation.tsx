@@ -54,11 +54,8 @@ const Conversation: React.FC<ConversationProps> = ({ user }) => {
             ...prev,
             answer: { content: answer },
           }));
-          console.log(model);
         })
         .then(({ done, answer }) => {
-          console.log(model, done);
-
           if (done) {
             saveQuestionMutation.mutate({
               answer,

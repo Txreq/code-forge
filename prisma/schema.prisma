@@ -1,27 +1,27 @@
-generator client {
-    provider = "prisma-client-js"
-}
-
 datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL")
 }
 
-// Necessary for Next auth
+generator client {
+    provider = "prisma-client-js"
+}
+
 model Account {
     id                String  @id @default(cuid())
-    userId            String  @unique
+    userId            String
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String? // @db.Text
-    access_token      String? // @db.Text
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String? // @db.Text
+    id_token          String? @db.Text
     session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
 }
@@ -40,7 +40,7 @@ model User {
     email         String?    @unique
     emailVerified DateTime?
     image         String?
-    account       Account?
+    accounts      Account[]
     sessions      Session[]
     questions     Question[]
     bookmarks     Bookmark[]
@@ -68,7 +68,7 @@ model Question {
     content    String
     datetime   DateTime  @default(now())
     answer_id  String    @unique
-    answer     Answer    @relation(fields: [answer_id], references: [id], onDelete: Cascade)
+    answer     Answer?   @relation(fields: [answer_id], references: [id], onDelete: Cascade)
     history    Bookmark? @relation(fields: [history_id], references: [id], onDelete: Cascade)
     history_id String?   @map("historyId")
 }

@@ -10,14 +10,7 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await getServerAuthSession();
   return {
     db,
-    session: {
-      ...session,
-      user: (!session || !session.user) ? null : (await db.user.findUnique({
-        where: {
-          id: session.user.id
-        }
-      }))
-    },
+    session,
     ...opts,
   };
 };

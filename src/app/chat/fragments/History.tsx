@@ -36,7 +36,7 @@ const History: React.FC<HistoryProps> = ({ data, user }) => {
                     placeholder={"👽"}
                   />
                 }
-                content={answer.content}
+                content={answer?.content ?? ""}
               />
             </div>
             {!last && <Separator key={idx} />}

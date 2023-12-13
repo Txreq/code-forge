@@ -1,7 +1,17 @@
 "use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/Display";
 import { Button } from "@/components/Form";
-import { Dialog } from "@/components/Overlay";
+import {
+  DialogFooter,
+  DialogHeader,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/Overlay";
 
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -18,6 +28,7 @@ import {
 
 import { ButtonStyles } from "@/components/Form/Button";
 import type { User } from "next-auth";
+
 import { signOut } from "next-auth/react";
 
 interface HistoryProps {
@@ -94,32 +105,35 @@ const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
                   <AvatarFallback>🫵</AvatarFallback>
                 </Avatar>
 
-                <Dialog.Wrapper>
-                  <Dialog.Trigger
+                <Dialog>
+                  <DialogTrigger
                     className={ButtonStyles({
                       variant: "outline",
                       className: "px-2",
                     })}
                   >
                     <LuLogOut />
-                  </Dialog.Trigger>
-                  <Dialog.Content>
-                    <Dialog.Header>
-                      <Dialog.Title>Hold on!</Dialog.Title>
-                      <Dialog.Description>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Hold on!</DialogTitle>
+                      <DialogDescription>
                         Are you sure you want to log out of your account?
-                      </Dialog.Description>
-                    </Dialog.Header>
-                    <Dialog.Footer className="inline-flex justify-end">
-                      <Dialog.Close>
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="inline-flex justify-end">
+                      <DialogClose>
                         <Button variant="ghost">Cancel</Button>
-                      </Dialog.Close>
-                      <Button variant="destructive" onClick={void signOut()}>
+                      </DialogClose>
+                      <Button
+                        variant="destructive"
+                        onClick={() => void signOut()}
+                      >
                         Logout
                       </Button>
-                    </Dialog.Footer>
-                  </Dialog.Content>
-                </Dialog.Wrapper>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </div>
