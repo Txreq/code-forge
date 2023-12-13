@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/Form";
 import Image from "next/image";
-import { useEffect } from "react";
 
 export default function Error({
   error,

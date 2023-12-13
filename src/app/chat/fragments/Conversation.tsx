@@ -3,18 +3,18 @@ import { api } from "@/trpc/react";
 
 import { History, Message, MessageAuthor } from "@/app/chat/fragments";
 import { Button, Textarea } from "@/components/Form";
+import { Separator } from "@/components/Display";
 
 import { useModel } from "@/hooks";
-import { User } from "next-auth";
-import { Answer, Question } from "@prisma/client";
 
 import Content from "@/content";
 
 // icons
 import { LuSend } from "react-icons/lu";
-import { Separator } from "@radix-ui/react-separator";
 
 //types
+import type { User } from "next-auth";
+import type { Answer, Question } from "@prisma/client";
 interface ConversationProps {
   user: User;
 }
@@ -40,7 +40,7 @@ const Conversation: React.FC<ConversationProps> = ({ user }) => {
 
     const input = inputRef.current;
     if (input && input.value.length > 0) {
-      let prompt = input.value;
+      const prompt = input.value;
       let answer = "";
       input.value = "";
 
@@ -60,7 +60,7 @@ const Conversation: React.FC<ConversationProps> = ({ user }) => {
           console.log(model, done);
 
           if (done) {
-            saveQuestionMutation.mutateAsync({
+            saveQuestionMutation.mutate({
               answer,
               prompt,
             });
@@ -85,6 +85,10 @@ const Conversation: React.FC<ConversationProps> = ({ user }) => {
               };
             });
           }
+        })
+        .catch((err) => {
+          alert("Something went wrong...");
+          console.error(err);
         });
     }
   };

@@ -87,6 +87,7 @@ export const appRouter = createTRPCRouter({
 
       let nextCursor: typeof cursor | undefined = undefined;
       if (questions.length > limit) {
+        // eslint-disable-next-line
         const nextItem = questions.pop() as (typeof questions)[number]
         nextCursor = nextItem.id
       }

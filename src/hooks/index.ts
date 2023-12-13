@@ -1,5 +1,5 @@
-import { AnswerSchema } from "@/lib/schemas";
-import { useCallback, useReducer, useState } from "react";
+import type { AnswerSchema } from "@/lib/schemas";
+import { useCallback, useState } from "react";
 
 import type { z } from "zod";
 
@@ -12,17 +12,9 @@ interface FetchState {
 type ResponseChunk = z.infer<typeof AnswerSchema>
 
 export function useModel() {
-  const [fetchState, setFetchState] = useReducer((red: Partial<FetchState>, init: Partial<FetchState>) => ({
-    ...red,
-    ...init
-  }), {
-    pending: false,
-  })
-
-  const [done, setDone] = useState(false)
-
   const controller = new AbortController()
 
+  // eslint-disable-next-line
   const ask = (prompt: string, callback: (chunk: ResponseChunk) => void): Promise<FetchState & { answer: string }> => new Promise(async (resolve, reject) => {
     let fetchState = { pending: true, done: false } as FetchState
     let answer = ""
@@ -44,7 +36,7 @@ export function useModel() {
       const decoder = new TextDecoder()
       const reader = response.body?.getReader()
 
-      if (!response.ok) setFetchState({ error: new Error("We can't process your request right now.") })
+      if (!response.ok) fetchState = { error: new Error("We can't process your request right now."), pending: false }
 
       while (true) {
         const chunk = await reader?.read()

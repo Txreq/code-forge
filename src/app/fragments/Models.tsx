@@ -6,7 +6,7 @@ import Style from "@/styles/modules/models.module.scss";
 import Content from "@/content";
 import { cn } from "@/lib/utils";
 
-export default function Models(props: { className?: string }) {
+export default function Models() {
   return (
     <Glass.Wrapper className={Style.grid}>
       {Content.Home.Features.map(({ src, alt, title }, i) => (

@@ -1,4 +1,4 @@
-import ReactMarkdown, { Options } from "react-markdown";
+import ReactMarkdown, { type Options } from "react-markdown";
 import RemarkGfm from "remark-gfm";
 
 import SyntaxHighlighter from "react-syntax-highlighter";
@@ -23,8 +23,8 @@ const Markdown: React.FC<MarkdownProps> = ({ content, ...props }) => {
         className="space-y-2"
         remarkPlugins={[RemarkGfm]}
         components={{
-          code({ node, className, children, ...props }) {
-            const match = /language-(\w+)/.exec(className || "");
+          code({ className, children, ...props }) {
+            const match = /language-(\w+)/.exec(className ?? "");
             if (match) {
               return (
                 <div className="group relative w-full">

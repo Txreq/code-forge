@@ -14,11 +14,11 @@ import {
   LuLogOut,
   LuMoreHorizontal,
   LuPencilLine,
-  LuSettings,
 } from "react-icons/lu";
 
 import { ButtonStyles } from "@/components/Form/Button";
 import type { User } from "next-auth";
+import { signOut } from "next-auth/react";
 
 interface HistoryProps {
   className?: string;
@@ -28,10 +28,6 @@ interface HistoryProps {
 const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
   const bookmark = api.bookmark.list.useQuery();
   const [isOpen, onOpen] = useState<boolean>(true);
-
-  const logOut = async () => {
-    (await import("next-auth/react")).signOut({});
-  };
 
   return (
     <>
@@ -118,7 +114,7 @@ const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
                       <Dialog.Close>
                         <Button variant="ghost">Cancel</Button>
                       </Dialog.Close>
-                      <Button variant="destructive" onClick={logOut}>
+                      <Button variant="destructive" onClick={void signOut()}>
                         Logout
                       </Button>
                     </Dialog.Footer>

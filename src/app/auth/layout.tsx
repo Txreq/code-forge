@@ -1,6 +1,7 @@
 import Content from "@/content";
 import "@/styles/globals.scss";
-import { Metadata } from "next";
+
+import type { Metadata } from "next";
 
 export const metadata = {
   title: Content.Brand,
