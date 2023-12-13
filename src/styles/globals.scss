@@ -136,6 +136,30 @@ $stripe: stripeShadow(1000);
   );
 }
 
+.no-scrollbar::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+}
+
 ::-webkit-scrollbar {
-  width: 0px;
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  padding: 4px;
+  border-radius: theme("borderRadius.lg");
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+::-webkit-scrollbar-button {
+  display: none;
 }

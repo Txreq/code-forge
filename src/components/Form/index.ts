@@ -1,6 +1,5 @@
-import Button from "./Button";
-import Input from "./Input";
-import Label from "./Label"
-import Checkbox from "./Checkbox";
-
-export { Button, Input, Label, Checkbox }
+export { default as Button } from "./Button";
+export { default as Input } from "./Input";
+export { default as Label } from "./Label"
+export { default as Checkbox } from "./Checkbox";
+export { default as Textarea } from "./Textarea"

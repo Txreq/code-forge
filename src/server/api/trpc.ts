@@ -5,13 +5,9 @@ import superjson from "superjson";
 
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
-import { Resend } from "resend";
-import { env } from "@/env";
 
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await getServerAuthSession();
-  const resend = new Resend(env.RESEND_API_KEY)
-
   return {
     db,
     session: {
@@ -22,7 +18,6 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
         }
       }))
     },
-    resend,
     ...opts,
   };
 };

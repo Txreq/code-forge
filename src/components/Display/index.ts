@@ -2,16 +2,10 @@
 
 export * from "./Card"
 
-import Separator from "./Separator"
-import GridBackground from "./GridBackground"
-import Glass from "./Glass"
-import Logo from "./Logo"
-
-export {
-  Separator,
-  GridBackground,
-  Glass,
-  Logo,
-}
+export { default as Separator } from "./Separator"
+export { default as GridBackground } from "./GridBackground"
+export { default as Glass } from "./Glass"
+export { default as Logo } from "./Logo"
+export { default as Markdown } from "./Markdown"
 
 export * from "./Avatar"

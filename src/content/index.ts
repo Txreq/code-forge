@@ -1,7 +1,7 @@
 const Home = {
   Hero: {
-    Headline: "meet your AI assistants ...",
-    Subheading: "Unlock specialized AI brilliance: tailored assistants for every task. Explore our diverse models, each an expert in its niche, enhancing your productivity effortlessly."
+    Headline: "Code Better, Together.",
+    Subheading: "Supercharge your coding workflow with AI-powered writing and discussion."
   },
   Features: [
     {
@@ -38,7 +38,7 @@ const Footer = {
 const Content = {
   Home,
   Footer,
-  Brand: "multai"
+  Brand: "CodeForge"
 }
 
 export default Content

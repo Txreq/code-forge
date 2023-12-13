@@ -1,46 +1,48 @@
-"use client";
-import Image from "next/image";
+import type { User } from "next-auth";
+import type { RouterOutputs } from "@/trpc/shared";
+import { Message, MessageAuthor } from "@/app/chat/fragments";
 
-import { Button } from "@/components/Form";
-import { cn } from "@/lib/utils";
-import { useState } from "react";
-
-// icons
-import { LuFileEdit, LuMenu, LuPencil, LuX } from "react-icons/lu";
+import Content from "@/content";
+import { Separator } from "@/components/Display";
 
 interface HistoryProps {
-  className?: string;
+  data: RouterOutputs["question"]["list"]["questions"];
+  user: User;
 }
 
-const History: React.FC<HistoryProps> = ({ className }) => {
-  const [isOpen, setOpen] = useState<boolean>(false);
-
+const History: React.FC<HistoryProps> = ({ data, user }) => {
   return (
     <>
-      <div className="hidden p-4 md:visible">
-        <Button
-          onClick={() => setOpen(true)}
-          variant="secondary"
-          className="p-2 text-lg"
-        >
-          <LuMenu />
-        </Button>
-      </div>
-      <aside
-        className={cn(
-          "h-full bg-secondary p-4 pt-0 text-accent-foreground",
-          className,
-        )}
-      >
-        <ul>
-          <li className="group relative cursor-pointer truncate rounded-lg bg-secondary px-4 py-3 duration-200 hover:bg-white/[.1] hover:shadow-lg">
-            <span>Title</span>
-            <span className="invisible absolute right-2 top-1/2 float-right -translate-y-1/2 rounded-lg bg-accent p-2 shadow-xl transition-all duration-200 hover:bg-background group-hover:visible">
-              <LuPencil />
-            </span>
-          </li>
-        </ul>
-      </aside>
+      {data.map(({ id, content: question, answer }, idx, arr) => {
+        const last = idx === arr.length - 1;
+        return (
+          <>
+            <div key={id} className={`w-full space-y-4 pb-4 ${last && "pb-8"}`}>
+              <Message
+                author={
+                  <MessageAuthor
+                    src={user.image ?? ""}
+                    name={user.name!}
+                    placeholder={"🫵"}
+                  />
+                }
+                content={question}
+              />
+              <Message
+                author={
+                  <MessageAuthor
+                    src={""}
+                    name={Content.Brand}
+                    placeholder={"👽"}
+                  />
+                }
+                content={answer.content}
+              />
+            </div>
+            {!last && <Separator key={idx} />}
+          </>
+        );
+      })}
     </>
   );
 };
