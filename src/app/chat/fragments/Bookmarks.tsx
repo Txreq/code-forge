@@ -1,23 +1,23 @@
 "use client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/Display";
 import { Button } from "@/components/Form";
+import { Dialog } from "@/components/Overlay";
+
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 // icons
+import { api } from "@/trpc/react";
 import {
   LuArrowLeft,
   LuArrowRight,
-  LuFileEdit,
-  LuMenu,
+  LuLogOut,
   LuMoreHorizontal,
-  LuPencil,
   LuPencilLine,
   LuSettings,
-  LuX,
 } from "react-icons/lu";
-import { api } from "@/trpc/react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/Display";
 
+import { ButtonStyles } from "@/components/Form/Button";
 import type { User } from "next-auth";
 
 interface HistoryProps {
@@ -27,7 +27,11 @@ interface HistoryProps {
 
 const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
   const bookmark = api.bookmark.list.useQuery();
-  const [isOpen, onOpen] = useState<boolean>(false);
+  const [isOpen, onOpen] = useState<boolean>(true);
+
+  const logOut = async () => {
+    (await import("next-auth/react")).signOut({});
+  };
 
   return (
     <>
@@ -93,9 +97,33 @@ const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
                   <AvatarImage src={user.image ?? ""} alt={`@${user.name}`} />
                   <AvatarFallback>🫵</AvatarFallback>
                 </Avatar>
-                <Button variant="outline" className="px-2">
-                  <LuSettings />
-                </Button>
+
+                <Dialog.Wrapper>
+                  <Dialog.Trigger
+                    className={ButtonStyles({
+                      variant: "outline",
+                      className: "px-2",
+                    })}
+                  >
+                    <LuLogOut />
+                  </Dialog.Trigger>
+                  <Dialog.Content>
+                    <Dialog.Header>
+                      <Dialog.Title>Hold on!</Dialog.Title>
+                      <Dialog.Description>
+                        Are you sure you want to log out of your account?
+                      </Dialog.Description>
+                    </Dialog.Header>
+                    <Dialog.Footer className="inline-flex justify-end">
+                      <Dialog.Close>
+                        <Button variant="ghost">Cancel</Button>
+                      </Dialog.Close>
+                      <Button variant="destructive" onClick={logOut}>
+                        Logout
+                      </Button>
+                    </Dialog.Footer>
+                  </Dialog.Content>
+                </Dialog.Wrapper>
               </div>
             </div>
           </div>

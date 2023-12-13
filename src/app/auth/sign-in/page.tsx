@@ -8,10 +8,18 @@ import {
   CardFooter,
 } from "@/components/Display";
 import { Link } from "@/components/Navigation";
+import { getServerAuthSession } from "@/server/auth";
 
 import type { NextPage } from "next";
+import { redirect } from "next/navigation";
 
-const SignInPage: NextPage = () => {
+const SignInPage: NextPage = async () => {
+  const session = await getServerAuthSession();
+
+  if (session && session.user) {
+    redirect("/chat");
+  }
+
   return (
     <CardFrame className="w-96 border-0 md:border">
       <CardHeader>
