@@ -14,10 +14,10 @@ const History: React.FC<HistoryProps> = ({ data, user }) => {
   return (
     <>
       {data.map(({ id, content: question, answer }, idx, arr) => {
-        const last = idx === arr.length - 1;
+        const first = idx == 0;
         return (
           <div key={id}>
-            <div className={`w-full space-y-4 pb-4 ${!last && "pb-8"}`}>
+            <div className={`w-full space-y-4 pb-4 ${first && "pb-8"}`}>
               <Message
                 author={
                   <MessageAuthor
@@ -39,7 +39,7 @@ const History: React.FC<HistoryProps> = ({ data, user }) => {
                 content={answer?.content ?? ""}
               />
             </div>
-            {last && <Separator />}
+            {!first && <Separator />}
           </div>
         );
       })}
