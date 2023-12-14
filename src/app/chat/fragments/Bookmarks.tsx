@@ -1,6 +1,11 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/Display";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Separator,
+} from "@/components/Display";
 import { Button, Input } from "@/components/Form";
 import {
   DialogFooter,
@@ -61,7 +66,7 @@ const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
     <>
       <div
         className={cn(
-          "absolute left-0 top-1/2 -translate-y-1/2 p-2 transition-all duration-200",
+          "absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-50 transition-all duration-200 hover:opacity-100",
           isOpen ? "ml-[250px]" : "ml-0",
         )}
       >
@@ -75,57 +80,56 @@ const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
       </div>
       <div
         className={cn(
-          "overflow-x-hidden transition-all duration-200",
+          "overflow-hidden transition-all duration-200",
           isOpen ? "w-[250px]" : "w-0",
         )}
       >
         <div className="relative z-50 h-full w-full bg-secondary">
-          <div className="grid h-full w-full grid-cols-1 gap-y-2">
-            <div className="row-span-full row-start-1 row-end-1 w-full p-4">
-              <Dialog>
-                <DialogOverlay />
-                <DialogTrigger
-                  className={ButtonStyles({
-                    variant: "outline",
-                    className:
-                      "inline-flex w-full items-center justify-between",
-                  })}
-                >
-                  <span>New chat</span>
-                  <LuPencilLine />
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Start a new chat...</DialogTitle>
-                  </DialogHeader>
-                  <form onSubmit={handleSubmit}>
-                    <div className="w-full space-y-2">
-                      <Input
-                        placeholder="title ..."
-                        type="text"
-                        disabled={bookmarkCreate.isLoading}
-                        onChange={(e) => setTitle(e.target.value)}
-                      />
-                      <div className="flex justify-end">
-                        <DialogClose>
-                          <Button
-                            type="submit"
-                            disabled={bookmarkCreate.isLoading}
-                          >
-                            Create
-                          </Button>
-                        </DialogClose>
+          <div className="flex h-full w-full flex-col">
+            <div className="h-fit">
+              <div className="p-4">
+                <Dialog>
+                  <DialogOverlay />
+                  <DialogTrigger
+                    className={ButtonStyles({
+                      variant: "outline",
+                      className:
+                        "inline-flex w-full items-center justify-between",
+                    })}
+                  >
+                    <span>New chat</span>
+                    <LuPencilLine />
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Start a new chat...</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit}>
+                      <div className="w-full space-y-2">
+                        <Input
+                          placeholder="title ..."
+                          type="text"
+                          disabled={bookmarkCreate.isLoading}
+                          onChange={(e) => setTitle(e.target.value)}
+                        />
+                        <div className="flex justify-end">
+                          <DialogClose>
+                            <Button
+                              type="submit"
+                              disabled={bookmarkCreate.isLoading}
+                            >
+                              Create
+                            </Button>
+                          </DialogClose>
+                        </div>
                       </div>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
-            <div
-              style={{
-                gridRow: "span 10 / span 10",
-              }}
-            >
+            <Separator className="mb-2" />
+            <div className="flex-1">
               <aside
                 className={cn(
                   "no-scrollbar h-full overflow-y-scroll bg-secondary p-4 pt-0 text-accent-foreground",
@@ -150,8 +154,9 @@ const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
                 </ul>
               </aside>
             </div>
-            <div className="row-span-1">
-              <div className="inline-flex h-full w-full items-center justify-between p-4 py-0">
+            <Separator className="mt-2" />
+            <div className="h-fit">
+              <div className="inline-flex h-full w-full items-center justify-between p-4 py-4">
                 <Avatar>
                   <AvatarImage src={user.image ?? ""} alt={`@${user.name}`} />
                   <AvatarFallback>🫵</AvatarFallback>
