@@ -16,7 +16,7 @@ const History: React.FC<HistoryProps> = ({ data, user }) => {
       {data.map(({ id, content: question, answer }, idx, arr) => {
         const first = idx == 0;
         return (
-          <div key={id}>
+          <div key={id} aria-label="message-history">
             <div className={`w-full space-y-4 pb-4 ${first && "pb-8"}`}>
               <Message
                 author={

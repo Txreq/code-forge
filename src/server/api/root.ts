@@ -80,7 +80,7 @@ export const appRouter = createTRPCRouter({
       try {
         const user_id = session.user.id;
 
-        db.$transaction(async () => {
+        await db.$transaction(async () => {
           const savedAnswer = await db.answer.create({
             data: {
               content: input.answer

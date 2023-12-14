@@ -17,7 +17,6 @@ import {
   DialogTitle,
   DialogTrigger,
   Popover,
-  PopoverClose,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/Overlay";
@@ -191,7 +190,7 @@ const CreateBookmarkButton: React.FC = () => {
     onError: (err) => alert(err.message),
     onSuccess: (data) => {
       router.push(`/chat/${data.id}`);
-      utils.bookmarks.list.refetch();
+      void utils.bookmarks.list.refetch();
     },
   });
 
@@ -304,7 +303,7 @@ const DeleteBookmarkButton: React.FC<{ id: string }> = ({ id }) => {
   const deleteBookmark = api.bookmarks.delete.useMutation({
     onSuccess: () => {
       router.push("/chat");
-      utils.bookmarks.list.refetch();
+      void utils.bookmarks.list.refetch();
     },
     onError: (err) => alert(err.message),
   });

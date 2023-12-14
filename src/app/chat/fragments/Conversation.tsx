@@ -1,45 +1,46 @@
 "use client";
 
-import React, { useEffect, useId, useRef, useState } from "react";
 import { api } from "@/trpc/react";
+import React, { useId, useRef, useState } from "react";
 
 import { History, Message, MessageAuthor } from "@/app/chat/fragments";
-import { Button, Textarea } from "@/components/Form";
 import { Separator } from "@/components/Display";
+import { Button, Textarea } from "@/components/Form";
 
 import { useModel } from "@/hooks";
 
 import Content from "@/content";
 
 // icons
-import { LuSend } from "react-icons/lu";
+import { LuSend, LuStopCircle } from "react-icons/lu";
 
 //types
-import type { User } from "next-auth";
-import type { Answer, Question } from "@prisma/client";
 import { Loading } from "@/components/Feedback";
+import type { Answer, Question } from "@prisma/client";
+import type { User } from "next-auth";
 interface ConversationProps {
   id: string;
   user: User;
 }
 type CurrentQuestion = Partial<Question & { answer: Partial<Answer> }>;
 
-const Conversation: React.FC<ConversationProps> = ({ id, user }) => {
+const Conversation: React.FC<ConversationProps> = ({
+  id: bookmark_id,
+  user,
+}) => {
   // logic
-  const utils = api.useUtils();
   const historyContainerId = useId();
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const saveQuestionMutation = api.question.save.useMutation();
+  const [prompt, setPrompt] = useState<string | null>(null);
+  const [answer, setAnswer] = useState<string | null>(null);
+
   const questionsInfiniteQuery = api.question.list.useInfiniteQuery(
-    { bookmark_id: id },
+    { bookmark_id },
     { getNextPageParam: (lastPage) => lastPage.nextCursor },
   );
 
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const [currentQuestion, setCurrentQuestion] =
-    useState<CurrentQuestion | null>(null);
-  const model = useModel();
+  const model = useModel(bookmark_id);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,48 +51,17 @@ const Conversation: React.FC<ConversationProps> = ({ id, user }) => {
       let answer = "";
       input.value = "";
 
-      setIsProcessing(true);
-      setCurrentQuestion(() => ({ content: prompt }));
-
+      setPrompt(prompt);
       model
-        .ask(prompt, (chunk) => {
+        .ask(prompt, function onData(chunk) {
           answer += chunk.response;
-          setCurrentQuestion((prev) => ({
-            ...prev,
-            answer: { content: answer },
-          }));
+          setAnswer(() => answer);
         })
-        .then(({ done, answer }) => {
-          if (done) {
-            saveQuestionMutation.mutate({
-              answer,
-              prompt,
-              bookmark_id: id,
-            });
-
-            setCurrentQuestion(null);
-            setIsProcessing(false);
-
-            utils.question.list.setInfiniteData(
-              { bookmark_id: id },
-              (cache) => {
-                if (!cache) return;
-                return {
-                  pages: cache?.pages.map((page) => ({
-                    ...page,
-                    questions: [
-                      {
-                        content: prompt,
-                        answer: { content: answer },
-                      } as (typeof page.questions)[number],
-                      ...page.questions,
-                    ],
-                  })),
-                  pageParams: [],
-                };
-              },
-            );
-          }
+        .then(({ answer }) => {
+          model.save(prompt, answer, () => {
+            setPrompt(null);
+            setAnswer(null);
+          });
         })
         .catch((err) => {
           alert("Something went wrong...");
@@ -120,22 +90,20 @@ const Conversation: React.FC<ConversationProps> = ({ id, user }) => {
           className="mx-auto flex h-full max-w-screen-lg flex-col-reverse gap-y-6 space-y-6 overflow-y-scroll px-2"
           id={historyContainerId}
         >
-          {currentQuestion && (
+          {prompt && (
             <>
-              <div className="w-full space-y-4">
-                {!!currentQuestion.content && (
-                  <Message
-                    author={
-                      <MessageAuthor
-                        src={user.image ?? ""}
-                        name={user.name!}
-                        placeholder={"🫵"}
-                      />
-                    }
-                    content={currentQuestion.content}
-                  />
-                )}
-                {!!currentQuestion.answer?.content && (
+              <div className="w-full space-y-4" aria-label="current-message">
+                <Message
+                  author={
+                    <MessageAuthor
+                      src={user.image ?? ""}
+                      name={user.name!}
+                      placeholder={"🫵"}
+                    />
+                  }
+                  content={prompt}
+                />
+                {answer && (
                   <Message
                     author={
                       <MessageAuthor
@@ -144,7 +112,7 @@ const Conversation: React.FC<ConversationProps> = ({ id, user }) => {
                         placeholder={"👽"}
                       />
                     }
-                    content={currentQuestion.answer.content}
+                    content={answer}
                   />
                 )}
                 <div className="pb-4"></div>
@@ -173,11 +141,14 @@ const Conversation: React.FC<ConversationProps> = ({ id, user }) => {
               className="h-full w-full resize-none"
               ref={inputRef}
               placeholder="Enter prompt ..."
-              disabled={isProcessing}
+              disabled={model.isProcessing}
             />
             <div className="h-ful">
-              <Button className="h-full" type="submit" disabled={isProcessing}>
-                <LuSend />
+              <Button
+                className="h-full"
+                type={model.isProcessing ? "button" : "submit"}
+              >
+                {model.isProcessing ? <LuStopCircle /> : <LuSend />}
               </Button>
             </div>
           </form>

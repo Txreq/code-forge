@@ -3,7 +3,7 @@ import { Conversation } from "../fragments";
 import { getServerAuthSession } from "@/server/auth";
 
 interface ChatPageProps {
-  params: { [key: string]: string };
+  params: Record<string, string>;
 }
 
 const Chat: NextPage<ChatPageProps> = async ({ params: { slug } }) => {
@@ -13,7 +13,7 @@ const Chat: NextPage<ChatPageProps> = async ({ params: { slug } }) => {
     throw new Error("You are trying to access protected content");
   }
 
-  return <Conversation id={slug as string} user={session?.user} />;
+  return <Conversation id={slug!} user={session.user} />;
 };
 
 export default Chat;
