@@ -48,9 +48,10 @@ const Markdown: React.FC<MarkdownProps> = ({ content, ...props }) => {
             } else {
               return (
                 <code
-                  className={["!whitespace-normal font-sans", className].join(
-                    " ",
-                  )}
+                  className={[
+                    "!whitespace-normal rounded bg-muted font-sans",
+                    className,
+                  ].join(" ")}
                   {...props}
                 >
                   {children}
