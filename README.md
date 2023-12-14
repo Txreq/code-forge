@@ -12,6 +12,9 @@
 Code Forge is an open-source project that aims to provide a customizable and extensible chatbot framework using Next.js
 14. This project serves as a clone of ChatGPT, allowing developers to create and deploy their own conversational agents.
 
+## Why not host it?
+It ain't cheap.
+
 ## Used technologies:
 
 - Next.js 14
@@ -25,4 +28,25 @@ Make sure you install the `ollama` binary in your system and pull the `codellama
 ```
 ollama pull codellama
 ```
-Then run the script `./scripts/`
+Then run the script `./scripts/model.sh`
+```
+if [[ ollama ]]; then
+  if [[ $(ollama l ist | grep "codellama:latest") ]]; then
+    ollama create oscar -f ./.Modefile
+  else
+    echo "[ERR] codellama LLM isn't installed"
+    echo "[INFO] run `ollama pull codellama`"
+else
+  echo "[ERR] ollama is not installed in this machine"
+fi
+```
+Make sure everything is in working fine by running:
+```
+ollama run oscar "hello"
+```
+Finally, we do the usual boring stuff
+```
+git clone https://github.com/Txreq/code-forge
+cd ./code-forge
+pnpm install
+```
