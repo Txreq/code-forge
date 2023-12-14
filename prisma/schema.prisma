@@ -62,15 +62,15 @@ model Answer {
 }
 
 model Question {
-    id         String    @id @unique @default(cuid())
-    user_id    String
-    user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    content    String
-    datetime   DateTime  @default(now())
-    answer_id  String    @unique
-    answer     Answer?   @relation(fields: [answer_id], references: [id], onDelete: Cascade)
-    history    Bookmark? @relation(fields: [history_id], references: [id], onDelete: Cascade)
-    history_id String?   @map("historyId")
+    id          String    @id @unique @default(cuid())
+    user_id     String
+    user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    content     String
+    datetime    DateTime  @default(now())
+    answer_id   String    @unique
+    answer      Answer?   @relation(fields: [answer_id], references: [id], onDelete: Cascade)
+    bookmark    Bookmark? @relation(fields: [bookmark_id], references: [id], onDelete: Cascade)
+    bookmark_id String?
 }
 
 model Bookmark {

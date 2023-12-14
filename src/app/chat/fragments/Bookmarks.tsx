@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/Display";
-import { Button } from "@/components/Form";
+import { Button, Input } from "@/components/Form";
 import {
   DialogFooter,
   DialogHeader,
@@ -30,6 +30,8 @@ import { ButtonStyles } from "@/components/Form/Button";
 import type { User } from "next-auth";
 
 import { signOut } from "next-auth/react";
+import { DialogOverlay } from "@radix-ui/react-dialog";
+import Link from "next/link";
 
 interface HistoryProps {
   className?: string;
@@ -37,8 +39,23 @@ interface HistoryProps {
 }
 
 const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
-  const bookmark = api.bookmark.list.useQuery();
+  const bookmarksList = api.bookmark.list.useQuery();
+  const bookmarkCreate = api.bookmark.create.useMutation({
+    onError: () => alert("Something went wrong..."),
+    onSuccess: () => bookmarksList.refetch(),
+  });
+
   const [isOpen, onOpen] = useState<boolean>(true);
+  const [title, setTitle] = useState<string>("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!!title.length && title.length < 24) {
+      bookmarkCreate.mutate({
+        title,
+      });
+    }
+  };
 
   return (
     <>
@@ -65,15 +82,44 @@ const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
         <div className="relative z-50 h-full w-full bg-secondary">
           <div className="grid h-full w-full grid-cols-1 gap-y-2">
             <div className="row-span-full row-start-1 row-end-1 w-full p-4">
-              <Button
-                className="inline-flex w-full justify-between"
-                variant="outline"
-              >
-                <div className="inline-flex items-center gap-x-2">
+              <Dialog>
+                <DialogOverlay />
+                <DialogTrigger
+                  className={ButtonStyles({
+                    variant: "outline",
+                    className:
+                      "inline-flex w-full items-center justify-between",
+                  })}
+                >
                   <span>New chat</span>
-                </div>
-                <LuPencilLine />
-              </Button>
+                  <LuPencilLine />
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Start a new chat...</DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleSubmit}>
+                    <div className="w-full space-y-2">
+                      <Input
+                        placeholder="title ..."
+                        type="text"
+                        disabled={bookmarkCreate.isLoading}
+                        onChange={(e) => setTitle(e.target.value)}
+                      />
+                      <div className="flex justify-end">
+                        <DialogClose>
+                          <Button
+                            type="submit"
+                            disabled={bookmarkCreate.isLoading}
+                          >
+                            Create
+                          </Button>
+                        </DialogClose>
+                      </div>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
             </div>
             <div
               style={{
@@ -87,13 +133,19 @@ const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
                 )}
               >
                 <ul>
-                  {bookmark.data?.map((bookmark) => (
-                    <li className="group relative cursor-pointer truncate rounded-lg bg-secondary px-4 py-3 duration-200 hover:bg-white/[.1] hover:shadow-lg">
-                      <span>{bookmark.title}</span>
-                      <span className="invisible absolute right-2 top-1/2 float-right -translate-y-1/2 rounded-lg bg-accent p-2 shadow-xl transition-all duration-200 hover:bg-background group-hover:visible">
-                        <LuMoreHorizontal />
-                      </span>
-                    </li>
+                  {bookmarksList.data?.map((bookmark) => (
+                    <Link
+                      key={bookmark.id}
+                      href={`/chat/${bookmark.id}`}
+                      className="h-full w-full"
+                    >
+                      <li className="group relative cursor-pointer truncate rounded-lg bg-secondary px-4 py-3 duration-200 hover:bg-white/[.1] hover:shadow-lg">
+                        <span>{bookmark.title}</span>
+                        <span className="invisible absolute right-2 top-1/2 float-right -translate-y-1/2 rounded-lg bg-accent p-2 shadow-xl transition-all duration-200 hover:bg-background group-hover:visible">
+                          <LuMoreHorizontal />
+                        </span>
+                      </li>
+                    </Link>
                   ))}
                 </ul>
               </aside>

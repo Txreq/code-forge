@@ -19,7 +19,7 @@ export const appRouter = createTRPCRouter({
   bookmark: createTRPCRouter({
     create: protectedProcedure.input(z.object({
       title: z.string()
-    })).query(async ({ ctx, input }) => {
+    })).mutation(async ({ ctx, input }) => {
       try {
         return (await ctx.db.bookmark.create({
           data: {
@@ -38,47 +38,55 @@ export const appRouter = createTRPCRouter({
   question: createTRPCRouter({
     save: protectedProcedure.input(z.object({
       prompt: z.string(),
-      answer: z.string()
+      answer: z.string(),
+      bookmark_id: z.string()
     })).mutation(async ({ ctx: { db, session }, input }) => {
       try {
         const user_id = session.user.id;
 
-        const savedAnswer = await db.answer.create({
-          data: {
-            content: input.answer
-          }
-        })
+        db.$transaction(async () => {
+          const savedAnswer = await db.answer.create({
+            data: {
+              content: input.answer
+            }
+          })
 
-        const savedQuestion = await db.question.create({
-          data: {
-            user_id,
-            content: input.prompt,
-            answer_id: savedAnswer.id
-          }
-        })
+          await db.question.create({
+            data: {
+              user_id,
+              content: input.prompt,
+              answer_id: savedAnswer.id,
+              bookmark_id: input.bookmark_id
+            },
+          })
+        });
 
-        return savedQuestion
+        return true
       } catch {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "failed "
+          message: "failed to save user\'s question"
         })
       }
     }),
     list: protectedProcedure.input(z.object({
-      limit: z.number().min(1).max(5).default(5),
-      cursor: z.string().nullish()
-    })).query(async ({ ctx, input: { limit, cursor } }) => {
+      limit: z.number().min(1).max(10).default(10),
+      cursor: z.string().optional(),
+      bookmark_id: z.string(),
+    })).query(async ({ ctx, input: { limit, cursor, bookmark_id } }) => {
       const user_id = ctx.session.user.id;
 
       const questions = await ctx.db.question.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
         orderBy: {
-          datetime: "asc"
+          datetime: "desc"
         },
         where: {
-          user_id
+          user_id,
+          AND: {
+            bookmark_id
+          }
         },
         include: {
           answer: true
@@ -89,7 +97,9 @@ export const appRouter = createTRPCRouter({
       if (questions.length > limit) {
         // eslint-disable-next-line
         const nextItem = questions.pop() as (typeof questions)[number]
-        nextCursor = nextItem.id
+        if (!!nextItem) {
+          nextCursor = nextItem.id
+        }
       }
 
       return { questions, nextCursor }

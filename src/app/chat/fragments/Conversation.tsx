@@ -1,4 +1,6 @@
-import React, { useRef, useState } from "react";
+"use client";
+
+import React, { useEffect, useId, useRef, useState } from "react";
 import { api } from "@/trpc/react";
 
 import { History, Message, MessageAuthor } from "@/app/chat/fragments";
@@ -16,17 +18,20 @@ import { LuSend } from "react-icons/lu";
 import type { User } from "next-auth";
 import type { Answer, Question } from "@prisma/client";
 interface ConversationProps {
+  id: string;
   user: User;
 }
 type CurrentQuestion = Partial<Question & { answer: Partial<Answer> }>;
 
-const Conversation: React.FC<ConversationProps> = ({ user }) => {
+const Conversation: React.FC<ConversationProps> = ({ id, user }) => {
+  // logic
   const utils = api.useUtils();
+  const historyContainerId = useId();
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const saveQuestionMutation = api.question.save.useMutation();
   const questionsInfiniteQuery = api.question.list.useInfiniteQuery(
-    {},
+    { bookmark_id: id },
     { getNextPageParam: (lastPage) => lastPage.nextCursor },
   );
 
@@ -60,27 +65,31 @@ const Conversation: React.FC<ConversationProps> = ({ user }) => {
             saveQuestionMutation.mutate({
               answer,
               prompt,
+              bookmark_id: id,
             });
 
             setCurrentQuestion(null);
             setIsProcessing(false);
 
-            utils.question.list.setInfiniteData({}, (cache) => {
-              if (!cache) return;
-              return {
-                pages: cache?.pages.map((page) => ({
-                  ...page,
-                  questions: [
-                    ...page.questions,
-                    {
-                      content: prompt,
-                      answer: { content: answer },
-                    } as (typeof page.questions)[number],
-                  ],
-                })),
-                pageParams: [],
-              };
-            });
+            utils.question.list.setInfiniteData(
+              { bookmark_id: id },
+              (cache) => {
+                if (!cache) return;
+                return {
+                  pages: cache?.pages.map((page) => ({
+                    ...page,
+                    questions: [
+                      ...page.questions,
+                      {
+                        content: prompt,
+                        answer: { content: answer },
+                      } as (typeof page.questions)[number],
+                    ],
+                  })),
+                  pageParams: [],
+                };
+              },
+            );
           }
         })
         .catch((err) => {
@@ -90,25 +99,44 @@ const Conversation: React.FC<ConversationProps> = ({ user }) => {
     }
   };
 
+  const historyData =
+    questionsInfiniteQuery.data?.pages?.flatMap((page) => page.questions) ?? [];
+
+  useEffect(() => {
+    const container = document.getElementById(historyContainerId);
+
+    if (window != undefined && container) {
+      container.addEventListener("scroll", () => {
+        const height = container.scrollHeight - container.clientHeight;
+        const scrollPercentage = (container.scrollTop / height) * 100;
+
+        if (
+          scrollPercentage * -1 > 85 &&
+          questionsInfiniteQuery.hasNextPage &&
+          !questionsInfiniteQuery.isFetching
+        ) {
+          questionsInfiniteQuery.fetchNextPage();
+        }
+      });
+    }
+  });
+
+  // render
   return (
     <div className="flex h-full flex-col">
-      {questionsInfiniteQuery.isLoading && !questionsInfiniteQuery.data && (
+      {/* {questionsInfiniteQuery.isLoading && !questionsInfiniteQuery.data && (
         <div>Loading ...</div>
-      )}
+      )} */}
 
       <div
         aria-label="user-bookmark-history"
-        className="flex-1 overflow-x-auto p-4"
+        className="flex-1 overflow-auto overflow-x-auto p-4"
       >
-        <div className="mx-auto h-full max-w-screen-lg space-y-6 px-2">
-          <History
-            data={
-              questionsInfiniteQuery.data?.pages?.flatMap(
-                (page) => page.questions,
-              ) ?? []
-            }
-            user={user}
-          />
+        <div
+          className="mx-auto flex h-full max-w-screen-lg flex-col-reverse gap-y-6 space-y-6 overflow-y-scroll px-2"
+          id={historyContainerId}
+        >
+          <History data={historyData} user={user} />
           {currentQuestion && (
             <>
               <Separator />
@@ -125,7 +153,6 @@ const Conversation: React.FC<ConversationProps> = ({ user }) => {
                     content={currentQuestion.content}
                   />
                 )}
-
                 {!!currentQuestion.answer?.content && (
                   <Message
                     author={
@@ -138,6 +165,7 @@ const Conversation: React.FC<ConversationProps> = ({ user }) => {
                     content={currentQuestion.answer.content}
                   />
                 )}
+                <div className="pb-4"></div>
               </div>
             </>
           )}
