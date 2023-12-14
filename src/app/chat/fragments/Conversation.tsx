@@ -80,11 +80,11 @@ const Conversation: React.FC<ConversationProps> = ({ id, user }) => {
                   pages: cache?.pages.map((page) => ({
                     ...page,
                     questions: [
-                      ...page.questions,
                       {
                         content: prompt,
                         answer: { content: answer },
                       } as (typeof page.questions)[number],
+                      ...page.questions,
                     ],
                   })),
                   pageParams: [],

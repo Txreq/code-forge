@@ -49,7 +49,7 @@ const Markdown: React.FC<MarkdownProps> = ({ content, ...props }) => {
               return (
                 <code
                   className={[
-                    "!whitespace-normal rounded bg-muted font-sans",
+                    "!whitespace-normal rounded bg-muted p-1 font-mono",
                     className,
                   ].join(" ")}
                   {...props}
