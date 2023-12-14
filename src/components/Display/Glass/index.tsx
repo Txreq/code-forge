@@ -1,7 +1,7 @@
-/* eslint-disable */
+"use client";
 
+/* eslint-disable */
 import React, { useEffect } from "react";
-import styles from "./style.module.scss";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -9,27 +9,26 @@ type Props = {
   children?: React.ReactNode;
 };
 
-const Card: React.FC<Props> = (props) => {
+const GlassCard: React.FC<Props> = (props) => {
   return (
-    <div className={cn(styles.card, props.className)}>{props.children}</div>
+    <div className={cn("glass-card", props.className)}>{props.children}</div>
   );
 };
-const Content: React.FC<Props> = (props) => (
-  <div className={cn(styles.content, "bg-background", props.className)}>
+const GlassContent: React.FC<Props> = (props) => (
+  <div className={cn("glass-content", "bg-background", props.className)}>
     {props.children}
   </div>
 );
 
-Card.displayName = "GlassCard";
-Content.displayName = "GlassContent";
+GlassCard.displayName = "GlassCard";
+GlassContent.displayName = "GlassContent";
 
-const Wrapper: React.FC<Props> = (props) => {
+const Glass: React.FC<Props> = (props) => {
   const wrapperId = React.useId();
-  const cards = React.Children.toArray(props.children);
 
   useEffect(() => {
     document.getElementById(wrapperId)?.addEventListener("mousemove", (e) => {
-      for (const card of document.getElementsByClassName(styles.card!)) {
+      for (const card of document.getElementsByClassName("glass-card")) {
         const rect = card.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -42,20 +41,10 @@ const Wrapper: React.FC<Props> = (props) => {
 
   return (
     <div className={props.className} id={wrapperId}>
-      {cards.map((child) => {
-        //@ts-expect-error displayName
-        if (child?.valueOf().type.displayName != Card.displayName) {
-          console.warn(
-            `the ${Wrapper.displayName!} components expects its children to be a ${Card.displayName!}`,
-            child,
-          );
-        } else {
-          return child;
-        }
-      })}
+      {props.children}
     </div>
   );
 };
-Wrapper.displayName = "GlassWrapper";
+Glass.displayName = "GlassWrapper";
 
-export default { Wrapper, Card, Content };
+export { Glass, GlassCard, GlassContent };

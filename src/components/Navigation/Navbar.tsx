@@ -2,7 +2,12 @@ import NextLink from "next/link";
 import { Logo } from "@/components/Display";
 import { Button } from "@/components/Form";
 
-export default function Navbar(props: { className?: string }) {
+import type { Session } from "next-auth";
+
+export default function Navbar(props: {
+  className?: string;
+  session: Session | null;
+}) {
   return (
     <header className={props.className}>
       <nav className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
@@ -13,8 +18,14 @@ export default function Navbar(props: { className?: string }) {
           </div>
 
           <div className="md:flex md:items-center md:gap-12">
-            <NextLink href="/auth/sign-in">
-              <Button>Login</Button>
+            <NextLink
+              href={
+                props.session && props.session.user ? "/chat" : "/auth/sign-in"
+              }
+            >
+              <Button>
+                {props.session && props.session.user ? "Chat" : "Sign in"}
+              </Button>
             </NextLink>
           </div>
         </div>

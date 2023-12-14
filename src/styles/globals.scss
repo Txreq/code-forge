@@ -76,90 +76,143 @@
   body {
     @apply bg-background text-foreground;
   }
-}
 
-.bg-container {
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  left: 0;
-  top: 0;
-  background: radial-gradient(
-    ellipse at bottom,
-    rgba($color: #80e142, $alpha: 0.2) 0%,
-    var(--background) 100%
-  );
-  z-index: -1;
-}
-
-$lineColor: var(--background);
-$step: 4;
-$borderWeight: 1px;
-
-@function borderShadow($n) {
-  $value: "0px 0px #{$lineColor}";
-  @for $i from 0 through $n {
-    $value: "#{$value} , 0px #{($step)*$i}px #{$lineColor}";
-  }
-  @return unquote($value);
-}
-@function stripeShadow($n) {
-  $value: "0px 0px #{$lineColor}";
-  @for $i from 0 through $n {
-    $value: "#{$value} , #{($step)*$i}px 0px #{$lineColor}";
-  }
-
-  @return unquote($value);
-}
-$border: borderShadow(1000);
-$stripe: stripeShadow(1000);
-
-.bg {
-  width: 100%;
-  height: $borderWeight;
-  box-shadow: $border;
-
-  &:after {
-    content: "";
-    position: absolute;
-    width: $borderWeight;
+  .bg-container {
     height: 100%;
-    box-shadow: $stripe;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: radial-gradient(
+      ellipse at bottom,
+      rgba($color: #80e142, $alpha: 0.2) 0%,
+      var(--background) 100%
+    );
+    z-index: -1;
   }
-}
 
-.radial-overlay {
-  background: radial-gradient(
-    circle,
-    rgba(0, 0, 0, 0) 0%,
-    var(--background) 100%
-  );
-}
+  .glass-card {
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: theme("borderRadius.lg");
+    cursor: pointer;
+  }
 
-.no-scrollbar::-webkit-scrollbar {
-  width: 0px !important;
-  height: 0px !important;
-}
+  .glass-card::before,
+  .glass-card::after {
+    content: "";
+    opacity: 0;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    border-radius: inherit;
 
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
+    transition: all 500ms;
+  }
 
-::-webkit-scrollbar-track {
-  background: var(--background);
-}
+  .glass-card::before {
+    background: radial-gradient(
+      800px circle at var(--mouseX) var(--mouseY),
+      rgba($color: #68e918, $alpha: 0.03) 0%,
+      transparent 20%
+    );
+    z-index: 3;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: var(--muted);
-  padding: 4px;
-  border-radius: theme("borderRadius.lg");
-}
+  .glass-card::after {
+    background: radial-gradient(
+      400px circle at var(--mouseX) var(--mouseY),
+      rgba($color: #68e918, $alpha: 0.08) 0%,
+      transparent 60%
+    );
+    z-index: 1;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary);
-}
+  .glass-card:hover::before,
+  .glass-card:hover::after {
+    opacity: 1;
+  }
 
-::-webkit-scrollbar-button {
-  display: none;
+  .glass-content {
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+    border-radius: inherit;
+    margin: 1px;
+    position: relative;
+    z-index: 2;
+  }
+
+  $lineColor: var(--background);
+  $step: 4;
+  $borderWeight: 1px;
+
+  @function borderShadow($n) {
+    $value: "0px 0px #{$lineColor}";
+    @for $i from 0 through $n {
+      $value: "#{$value} , 0px #{($step)*$i}px #{$lineColor}";
+    }
+    @return unquote($value);
+  }
+  @function stripeShadow($n) {
+    $value: "0px 0px #{$lineColor}";
+    @for $i from 0 through $n {
+      $value: "#{$value} , #{($step)*$i}px 0px #{$lineColor}";
+    }
+
+    @return unquote($value);
+  }
+  $border: borderShadow(1000);
+  $stripe: stripeShadow(1000);
+
+  .bg {
+    width: 100%;
+    height: $borderWeight;
+    box-shadow: $border;
+
+    &:after {
+      content: "";
+      position: absolute;
+      width: $borderWeight;
+      height: 100%;
+      box-shadow: $stripe;
+    }
+  }
+
+  .radial-overlay {
+    background: radial-gradient(
+      circle,
+      rgba(0, 0, 0, 0) 0%,
+      var(--background) 100%
+    );
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    width: 0px !important;
+    height: 0px !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--background);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--muted);
+    padding: 4px;
+    border-radius: theme("borderRadius.lg");
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+  }
+
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
 }
