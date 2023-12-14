@@ -8,14 +8,18 @@ import {
 } from "@/components/Display";
 import { Button, Input } from "@/components/Form";
 import {
-  DialogFooter,
-  DialogHeader,
   Dialog,
   DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
+  Popover,
+  PopoverClose,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/Overlay";
 
 import { cn } from "@/lib/utils";
@@ -29,14 +33,17 @@ import {
   LuLogOut,
   LuMoreHorizontal,
   LuPencilLine,
+  LuTrash,
 } from "react-icons/lu";
 
 import { ButtonStyles } from "@/components/Form/Button";
 import type { User } from "next-auth";
 
-import { signOut } from "next-auth/react";
 import { DialogOverlay } from "@radix-ui/react-dialog";
+import { signOut } from "next-auth/react";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface HistoryProps {
   className?: string;
@@ -44,23 +51,9 @@ interface HistoryProps {
 }
 
 const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
-  const bookmarksList = api.bookmark.list.useQuery();
-  const bookmarkCreate = api.bookmark.create.useMutation({
-    onError: () => alert("Something went wrong..."),
-    onSuccess: () => bookmarksList.refetch(),
-  });
+  const bookmarksList = api.bookmarks.list.useQuery();
 
   const [isOpen, onOpen] = useState<boolean>(true);
-  const [title, setTitle] = useState<string>("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!!title.length && title.length < 24) {
-      bookmarkCreate.mutate({
-        title,
-      });
-    }
-  };
 
   return (
     <>
@@ -88,69 +81,55 @@ const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
           <div className="flex h-full w-full flex-col">
             <div className="h-fit">
               <div className="p-4">
-                <Dialog>
-                  <DialogOverlay />
-                  <DialogTrigger
-                    className={ButtonStyles({
-                      variant: "outline",
-                      className:
-                        "inline-flex w-full items-center justify-between",
-                    })}
-                  >
-                    <span>New chat</span>
-                    <LuPencilLine />
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Start a new chat...</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmit}>
-                      <div className="w-full space-y-2">
-                        <Input
-                          placeholder="title ..."
-                          type="text"
-                          disabled={bookmarkCreate.isLoading}
-                          onChange={(e) => setTitle(e.target.value)}
-                        />
-                        <div className="flex justify-end">
-                          <DialogClose>
-                            <Button
-                              type="submit"
-                              disabled={bookmarkCreate.isLoading}
-                            >
-                              Create
-                            </Button>
-                          </DialogClose>
-                        </div>
-                      </div>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                <CreateBookmarkButton />
               </div>
             </div>
             <Separator className="mb-2" />
             <div className="flex-1">
               <aside
                 className={cn(
-                  "no-scrollbar h-full overflow-y-scroll bg-secondary p-4 pt-0 text-accent-foreground",
+                  "no-scrollbar h-full w-full overflow-y-scroll bg-secondary p-4 pt-0 text-accent-foreground",
                   className,
                 )}
               >
-                <ul>
+                <ul className="flex flex-col gap-y-2">
                   {bookmarksList.isLoading && (
                     <li className="animate-pulse rounded-lg bg-white/[.08] px-4 py-6 shadow-lg duration-1000 animate-infinite"></li>
                   )}
                   {bookmarksList.data?.map((bookmark) => (
                     <Link
-                      key={bookmark.id}
                       href={`/chat/${bookmark.id}`}
-                      className="h-full w-full"
+                      className="group h-12 w-full cursor-pointer rounded-lg p-2 hover:bg-muted"
+                      key={bookmark.id}
                     >
-                      <li className="group relative cursor-pointer truncate rounded-lg bg-secondary px-4 py-3 duration-200 hover:bg-white/[.1] hover:shadow-lg">
-                        <span>{bookmark.title}</span>
-                        <span className="invisible absolute right-2 top-1/2 float-right -translate-y-1/2 rounded-lg bg-accent p-2 shadow-xl transition-all duration-200 hover:bg-background group-hover:visible">
-                          <LuMoreHorizontal />
-                        </span>
+                      <li className="inline-flex h-full w-full">
+                        <div className="w-full truncate">
+                          <p className="h-full truncate selection:bg-transparent selection:text-foreground">
+                            {bookmark.title}
+                          </p>
+                        </div>
+                        <div className="invisible grid w-12 place-content-center group-hover:visible">
+                          <Popover>
+                            <PopoverTrigger
+                              className={ButtonStyles({
+                                variant: "ghost",
+                                className:
+                                  "!px-2 ring-primary hover:bg-black/30",
+                              })}
+                            >
+                              <LuMoreHorizontal />
+                            </PopoverTrigger>
+                            <PopoverContent className="w-36 !p-2">
+                              <div className="w-full">
+                                <EditBookmarkButton
+                                  id={bookmark.id}
+                                  title={bookmark.title}
+                                />
+                                <DeleteBookmarkButton id={bookmark.id} />
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                        </div>
                       </li>
                     </Link>
                   ))}
@@ -200,6 +179,168 @@ const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
         </div>
       </div>
     </>
+  );
+};
+
+// create bookmark button
+const CreateBookmarkButton: React.FC = () => {
+  const [title, setTitle] = useState<string>("");
+  const router = useRouter();
+  const utils = api.useUtils();
+  const bookmarkCreate = api.bookmarks.create.useMutation({
+    onError: (err) => alert(err.message),
+    onSuccess: (data) => {
+      router.push(`/chat/${data.id}`);
+      utils.bookmarks.list.refetch();
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!!title.length && title.length < 24) {
+      bookmarkCreate.mutate({
+        title,
+      });
+    }
+  };
+
+  return (
+    <Dialog>
+      <DialogOverlay />
+      <DialogTrigger
+        className={ButtonStyles({
+          variant: "outline",
+          className: "inline-flex w-full items-center justify-between",
+        })}
+      >
+        <span>New chat</span>
+        <LuPencilLine />
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Start a new chat...</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <div className="w-full space-y-2">
+            <Input
+              placeholder="title ..."
+              type="text"
+              disabled={bookmarkCreate.isLoading}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <div className="flex justify-end">
+              <DialogClose>
+                <Button type="submit" disabled={bookmarkCreate.isLoading}>
+                  Create
+                </Button>
+              </DialogClose>
+            </div>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// edit  bookmark button
+const EditBookmarkButton: React.FC<{ id: string; title: string }> = ({
+  id,
+  title,
+}) => {
+  const utils = api.useUtils();
+  const updateTitle = api.bookmarks.updateOne.useMutation({
+    onSuccess: () => utils.bookmarks.list.refetch(),
+    onError: (err) => alert(err.message),
+  });
+  const [newTitle, setNewTitle] = useState<string>(title);
+
+  return (
+    <Dialog>
+      <DialogTrigger
+        className={ButtonStyles({
+          variant: "ghost",
+          className: "flex w-full justify-start gap-x-2",
+        })}
+      >
+        <LuPencilLine />
+        <span>Edit</span>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit</DialogTitle>
+          <DialogDescription>
+            What title would you like for your new bookmark?
+          </DialogDescription>
+        </DialogHeader>
+        <Input
+          placeholder="new title ..."
+          defaultValue={title}
+          onChange={(e) => setNewTitle(e.target.value)}
+          maxLength={20}
+        />
+        <div className="flex justify-end gap-x-4">
+          <DialogClose>
+            <Button variant="ghost">Cancel</Button>
+          </DialogClose>
+          <DialogClose>
+            <Button
+              onClick={() => {
+                updateTitle.mutate({ id, title: newTitle });
+              }}
+            >
+              Save
+            </Button>
+          </DialogClose>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// delete bookmark button
+const DeleteBookmarkButton: React.FC<{ id: string }> = ({ id }) => {
+  const router = useRouter();
+  const utils = api.useUtils();
+  const deleteBookmark = api.bookmarks.delete.useMutation({
+    onSuccess: () => {
+      router.push("/chat");
+      utils.bookmarks.list.refetch();
+    },
+    onError: (err) => alert(err.message),
+  });
+
+  return (
+    <Dialog>
+      <DialogTrigger
+        className={ButtonStyles({
+          variant: "ghost",
+          className: "flex w-full justify-start gap-x-2 hover:bg-red-600",
+        })}
+      >
+        <LuTrash />
+        <span>Delete</span>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+          <DialogDescription>
+            This action cannot be undone. This will permanently delete this
+            conversation.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex justify-end gap-x-4">
+          <DialogClose>
+            <Button variant="ghost">Cancel</Button>
+          </DialogClose>
+          <Button
+            variant="destructive"
+            onClick={() => deleteBookmark.mutate({ id })}
+          >
+            Delete
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

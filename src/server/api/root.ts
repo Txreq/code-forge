@@ -16,7 +16,9 @@ export const appRouter = createTRPCRouter({
       }
     }),
   }),
-  bookmark: createTRPCRouter({
+
+  // 
+  bookmarks: createTRPCRouter({
     create: protectedProcedure.input(z.object({
       title: z.string()
     })).mutation(async ({ ctx, input }) => {
@@ -31,11 +33,45 @@ export const appRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "failed to save bookmark" })
       }
     }),
+    // listing all saved bookmarks
     list: protectedProcedure.query(async ({ ctx }) => {
       return (await ctx.db.bookmark.findMany({ where: { user_id: ctx.session.user.id } }))
+    }),
+    // edit a bookmark
+    updateOne: protectedProcedure.input(z.object({ id: z.string(), title: z.string().max(20) })).mutation(async ({ ctx, input }) => {
+      try {
+        const bookmark = await ctx.db.bookmark.update({
+          where: {
+            id: input.id
+          },
+          data: {
+            title: input.title
+          }
+        });
+
+        return bookmark
+      } catch (error) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "failed to update bookmark" })
+      }
+    }),
+    // delete bookmark
+    delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.db.$transaction([
+          ctx.db.answer.deleteMany({ where: { question: { bookmark_id: input.id } } }),
+          ctx.db.bookmark.delete({
+            where: { id: input.id }
+          }),
+        ])
+      } catch (error) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "failed to delete bookmark" })
+      }
     })
   }),
+
+  // 
   question: createTRPCRouter({
+    // save user's question
     save: protectedProcedure.input(z.object({
       prompt: z.string(),
       answer: z.string(),
@@ -69,6 +105,7 @@ export const appRouter = createTRPCRouter({
         })
       }
     }),
+    // list all user questions
     list: protectedProcedure.input(z.object({
       limit: z.number().min(1).max(10).default(10),
       cursor: z.string().optional(),
