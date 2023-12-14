@@ -137,6 +137,9 @@ const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
                 )}
               >
                 <ul>
+                  {bookmarksList.isLoading && (
+                    <li className="animate-pulse rounded-lg bg-white/[.08] px-4 py-6 shadow-lg duration-1000 animate-infinite"></li>
+                  )}
                   {bookmarksList.data?.map((bookmark) => (
                     <Link
                       key={bookmark.id}

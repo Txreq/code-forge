@@ -17,6 +17,7 @@ import { LuSend } from "react-icons/lu";
 //types
 import type { User } from "next-auth";
 import type { Answer, Question } from "@prisma/client";
+import { Loading } from "@/components/Feedback";
 interface ConversationProps {
   id: string;
   user: User;
@@ -104,10 +105,12 @@ const Conversation: React.FC<ConversationProps> = ({ id, user }) => {
 
   // render
   return (
-    <div className="flex h-full flex-col">
-      {/* {questionsInfiniteQuery.isLoading && !questionsInfiniteQuery.data && (
-        <div>Loading ...</div>
-      )} */}
+    <div className="relative flex h-full flex-col">
+      {questionsInfiniteQuery.isLoading && (
+        <div className="absolute left-0 top-0 grid h-screen w-full place-content-center overflow-hidden">
+          <Loading />
+        </div>
+      )}
 
       <div
         aria-label="user-bookmark-history"
