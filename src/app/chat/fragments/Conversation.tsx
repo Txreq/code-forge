@@ -120,10 +120,8 @@ const Conversation: React.FC<ConversationProps> = ({ id, user }) => {
           className="mx-auto flex h-full max-w-screen-lg flex-col-reverse gap-y-6 space-y-6 overflow-y-scroll px-2"
           id={historyContainerId}
         >
-          <History data={historyData} user={user} />
           {currentQuestion && (
             <>
-              <Separator />
               <div className="w-full space-y-4">
                 {!!currentQuestion.content && (
                   <Message
@@ -151,8 +149,10 @@ const Conversation: React.FC<ConversationProps> = ({ id, user }) => {
                 )}
                 <div className="pb-4"></div>
               </div>
+              <Separator />
             </>
           )}
+          <History data={historyData} user={user} />
           {questionsInfiniteQuery.hasNextPage &&
             !questionsInfiniteQuery.isFetching && (
               <div className="inline-flex w-full justify-center">
