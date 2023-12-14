@@ -66,12 +66,12 @@ const Bookmarks: React.FC<HistoryProps> = ({ className, user }) => {
     <>
       <div
         className={cn(
-          "absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-50 transition-all duration-200 hover:opacity-100",
+          "absolute left-0 top-1/2 z-50 -translate-y-1/2 p-2 opacity-50 transition-all duration-200 hover:opacity-100",
           isOpen ? "ml-[250px]" : "ml-0",
         )}
       >
         <Button
-          variant="ghost"
+          variant="default"
           className="px-2 text-lg"
           onClick={() => onOpen((prev) => !prev)}
         >
