@@ -102,25 +102,6 @@ const Conversation: React.FC<ConversationProps> = ({ id, user }) => {
   const historyData =
     questionsInfiniteQuery.data?.pages?.flatMap((page) => page.questions) ?? [];
 
-  useEffect(() => {
-    const container = document.getElementById(historyContainerId);
-
-    if (window != undefined && container) {
-      container.addEventListener("scroll", () => {
-        const height = container.scrollHeight - container.clientHeight;
-        const scrollPercentage = (container.scrollTop / height) * 100;
-
-        if (
-          scrollPercentage * -1 > 85 &&
-          questionsInfiniteQuery.hasNextPage &&
-          !questionsInfiniteQuery.isFetching
-        ) {
-          questionsInfiniteQuery.fetchNextPage();
-        }
-      });
-    }
-  });
-
   // render
   return (
     <div className="flex h-full flex-col">
@@ -169,6 +150,14 @@ const Conversation: React.FC<ConversationProps> = ({ id, user }) => {
               </div>
             </>
           )}
+          {questionsInfiniteQuery.hasNextPage &&
+            !questionsInfiniteQuery.isFetching && (
+              <div className="inline-flex w-full justify-center">
+                <Button onClick={() => questionsInfiniteQuery.fetchNextPage()}>
+                  Load more
+                </Button>
+              </div>
+            )}
         </div>
       </div>
       <div className="z-40 w-full shadow-[0_0px_50px_var(--background)]">
