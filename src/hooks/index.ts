@@ -1,6 +1,6 @@
 import type { AnswerSchema } from "@/lib/schemas";
 import { api } from "@/trpc/react";
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 
 import type { z } from "zod";
 
@@ -22,8 +22,6 @@ export function useModel(bookmark_id: string) {
     }
   });
   const controller = new AbortController();
-
-
 
   const [fetchState, dispatch] = useReducer(
     (current: FetchState, update: Partial<FetchState>) => ({
@@ -144,15 +142,21 @@ export function useModel(bookmark_id: string) {
   };
 
 
-  const stop = (_prompt: string, _answer: string, callback: () => void) => {
+  const stop = (_prompt: string | null, _answer: string | null, callback: () => void) => {
     const worthSaving =
-      _answer && _answer.length > 0 && _prompt && _prompt.length > 0;
-    controller.abort();
+      _answer && _answer.length > 120 && _prompt && _prompt.length > 0;
+    controller.abort("USER CALL");
 
     if (worthSaving) {
       save(_prompt, _answer, callback);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      controller.abort("COMPONENT UNMOUNT")
+    }
+  }, [])
 
   return {
     ask,

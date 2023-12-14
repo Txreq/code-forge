@@ -70,6 +70,13 @@ const Conversation: React.FC<ConversationProps> = ({
     }
   };
 
+  const stop = () => {
+    model.stop(prompt, answer, function onStop() {
+      setPrompt(null);
+      setAnswer(null);
+    });
+  };
+
   const historyData =
     questionsInfiniteQuery.data?.pages?.flatMap((page) => page.questions) ?? [];
 
@@ -147,6 +154,7 @@ const Conversation: React.FC<ConversationProps> = ({
               <Button
                 className="h-full"
                 type={model.isProcessing ? "button" : "submit"}
+                onClick={model.isProcessing ? stop : undefined}
               >
                 {model.isProcessing ? <LuStopCircle /> : <LuSend />}
               </Button>
