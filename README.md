@@ -2,13 +2,7 @@
   <h1>Code Forge</h1>
 </div>
 
-<div style="display:flex;justify-content: center;">
-  <video width="520" controls autoplay>
-    <source src="https://github.com/Txreq/code-forge/assets/58333332/37b34f78-ca35-4661-ad00-43bfe0adf651" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-</div>
-
+https://github.com/Txreq/code-forge/assets/58333332/37b34f78-ca35-4661-ad00-43bfe0adf651
 
 
 
