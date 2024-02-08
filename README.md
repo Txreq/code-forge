@@ -8,7 +8,7 @@ https://github.com/Txreq/code-forge/assets/58333332/37b34f78-ca35-4661-ad00-43bf
 
 
 Code Forge is an open-source project that aims to provide a customizable and extensible chatbot framework using Next.js
-14. This project serves as a clone of ChatGPT, allowing developers to create and deploy their own conversational agents.
+14. This project serves as a clone of ChatGPT, allowing developers to create and deploy their own conversational agents. (didn't use ChatGPT (btw))
 
 ## Why not host it?
 It ain't cheap.
